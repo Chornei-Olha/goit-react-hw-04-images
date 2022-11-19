@@ -1,5 +1,6 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import fetchImages from '../../services/images-api';
 import Searchbar from '../Searchbar';
@@ -8,115 +9,80 @@ import Button from '../Button';
 import Loader from '../Loader';
 import Modal from '../Modal';
 
-class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    imagesOnPage: 0,
-    totalImages: 0,
-    isLoading: false,
-    showModal: false,
-    images: [],
-    error: null,
-    currentImageUrl: null,
-    currentImageDescription: null,
+function App() {
+  const [queryParams, setQueryParams] = useState({query:'', prevPage:1, prevImages:[]});
+  // const [page, setPage] = useState(1);
+  const [imagesOnPage, setImagesOnPage] = useState(0);
+  const [totalImages, setTotalImages] = useState(0);
+  // const [contacts, setContacts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [images, setImages] = useState([]);
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
+  const [currentImageDescription, setCurrentImageDescription] = useState(false);
+
+  // useEffect(() => {
+
+  // }, [query, page]);
+
+  const getSearchRequest = () => {
+    setIsLoading(true);
+
+       fetchImages(queryParams.query, queryParams.prevPage)
+      .then(({ hits, totalHits }) => {
+        const imagesArray = hits.map(hit => ({
+          id: hit.id,
+          description: hit.tags,
+          smallImage: hit.webformatURL,
+          largeImage: hit.largeImageURL,
+        }));
+
+        setImages([...images, ...imagesArray])
+        setImagesOnPage(imagesOnPage + imagesArray.length)
+        setTotalImages(totalHits)
+        setIsLoading(false)
+        setQueryParams({...queryParams, prevPage: queryParams.prevPage + 1});
+
+      })
+      .catch(error => toast.error(error))
+      .finally(() => setIsLoading(false));
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
-
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState(({ isLoading }) => ({ isLoading: !isLoading }));
-
-      fetchImages(query, this.state.page)
-        .then(({ hits, totalHits }) => {
-          const imagesArray = hits.map(hit => ({
-            id: hit.id,
-            description: hit.tags,
-            smallImage: hit.webformatURL,
-            largeImage: hit.largeImageURL,
-          }));
-          console.log(this.state.images);
-console.log(hits)
-          console.log(this.state.imagesArray);
-          
-          return this.setState(({ images, imagesOnPage }) => ({
-            images: [...images, ...imagesArray],
-            imagesOnPage: imagesOnPage + imagesArray.length,
-            totalImages: totalHits,
-            isLoading: false,
-          }));
-        })
-        .catch(error => this.setState({ error }))
-         .finally(() =>
-          this.setState(({ isLoading }) => ({ isLoading: false }))
-        );
-    }
-  }
-
-  getSearchRequest = query => {
-    this.setState({ query: query, page: 1, images: [] });
+  const toggleModal = () => {
+    setShowModal(prevShowModal => !prevShowModal);
   };
 
-  onNextFetch = () => {
-    this.setState(({ page }) => ({ page: page + 1 }));
-  };
-
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
-  };
-
-  openModal = e => {
+  const openModal = e => {
     const currentImageUrl = e.target.dataset.large;
     const currentImageDescription = e.target.alt;
 
-      this.setState(({ showModal }) => ({
-        showModal: !showModal,
-        currentImageUrl: currentImageUrl,
-        currentImageDescription: currentImageDescription,
-      }));
+    setShowModal(!showModal);
+    setCurrentImageUrl(currentImageUrl);
+    setCurrentImageDescription(currentImageDescription)
   };
+  return (
+    <>
+      <Searchbar onSubmit={getSearchRequest} queryParams={queryParams} setQueryParams={setQueryParams}/>
 
-  render() {
-    const {
-      images,
-      imagesOnPage,
-      totalImages,
-      isLoading,
-      showModal,
-      currentImageUrl,
-      currentImageDescription,
-    } = this.state;
+      {images && <ImageGallery images={images} openModal={openModal} />}
 
-    const getSearchRequest = this.getSearchRequest;
-    const onNextFetch = this.onNextFetch;
-    const openModal = this.openModal;
-    const toggleModal = this.toggleModal;
+      {isLoading && <Loader />}
 
-    return (
-      <>
-        <Searchbar onSubmit={getSearchRequest} />
+      {imagesOnPage >= 12 && imagesOnPage < totalImages && (
+        <Button onNextFetch={getSearchRequest} />
+      )}
 
-        {images && <ImageGallery images={images} openModal={openModal} />}
+      {showModal && (
+        <Modal
+          onClose={toggleModal}
+          currentImageUrl={currentImageUrl}
+          currentImageDescription={currentImageDescription}
+        />
+      )}
 
-        {isLoading && <Loader />}
-
-        {imagesOnPage >= 12 && imagesOnPage < totalImages && (
-          <Button onNextFetch={onNextFetch} />
-        )}
-
-        {showModal && (
-          <Modal
-            onClose={toggleModal}
-            currentImageUrl={currentImageUrl}
-            currentImageDescription={currentImageDescription}
-          />
-        )}
-
-        <ToastContainer />
-      </>
-    );
-  }
+      <ToastContainer />
+    </>
+  );
 }
 
 export default App;
