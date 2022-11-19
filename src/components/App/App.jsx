@@ -11,19 +11,13 @@ import Modal from '../Modal';
 
 function App() {
   const [queryParams, setQueryParams] = useState({query:'', prevPage:1, prevImages:[]});
-  // const [page, setPage] = useState(1);
   const [imagesOnPage, setImagesOnPage] = useState(0);
   const [totalImages, setTotalImages] = useState(0);
-  // const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [images, setImages] = useState([]);
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [currentImageDescription, setCurrentImageDescription] = useState(false);
-
-  // useEffect(() => {
-
-  // }, [query, page]);
 
   const getSearchRequest = () => {
     setIsLoading(true);
