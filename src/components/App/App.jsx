@@ -20,7 +20,7 @@ function App() {
   const [page, setPage] = useState(null);
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [currentImageDescription, setCurrentImageDescription] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!queryParams) {
