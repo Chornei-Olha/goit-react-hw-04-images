@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 // import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import fetch from '../../services/images-api';
+import imageFetch from '../../services/images-api';
 import Searchbar from '../Searchbar';
 import ImageGallery from '../ImageGallery';
 import Button from '../Button';
@@ -28,7 +28,7 @@ function App() {
     setIsLoading(true);
 
     const renderImages = () => {
-      fetch(queryParams, setPage)
+      imageFetch(queryParams, setPage)
         .then(({ hits, totalHits }) => {
           const imagesArray = hits.map(hit => ({
             id: hit.id,
