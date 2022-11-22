@@ -8,42 +8,62 @@ import ImageGallery from '../ImageGallery';
 import Button from '../Button';
 import Loader from '../Loader';
 import Modal from '../Modal';
+import { useEffect } from 'react';
 
 function App() {
-  const [queryParams, setQueryParams] = useState({query:'', prevPage:1, prevImages:[]});
-  const [imagesOnPage, setImagesOnPage] = useState(0);
+  const [queryParams, setQueryParams] = useState('');
+  const [images, setImages] = useState([]);
   const [totalImages, setTotalImages] = useState(0);
+  const [imagesOnPage, setImagesOnPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(null);
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [currentImageDescription, setCurrentImageDescription] = useState(false);
+  const [error, setError] = useState(null);
 
-  const getSearchRequest = () => {
+  useEffect(() => {
+    if (!queryParams) {
+      return;
+    }
     setIsLoading(true);
 
-       fetchImages(queryParams.query, queryParams.prevPage)
-      .then(({ hits, totalHits }) => {
-        const imagesArray = hits.map(hit => ({
-          id: hit.id,
-          description: hit.tags,
-          smallImage: hit.webformatURL,
-          largeImage: hit.largeImageURL,
-        }));
+    const renderImages = () => {
+      fetchImages(queryParams, setPage)
+        .then(({ hits, totalHits }) => {
+          const imagesArray = hits.map(hit => ({
+            id: hit.id,
+            description: hit.tags,
+            smallImage: hit.webformatURL,
+            largeImage: hit.largeImageURL,
+          }));
+          setImages(images => [...images, ...imagesArray]);
+          setImagesOnPage(imagesOnPage => imagesOnPage + imagesArray.length);
+          setTotalImages(totalHits);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          setError(error);
+        });
+      toast
+        .error('Please enter a valid request')
+        .finally(() => setIsLoading(false));
+    };
+    renderImages();
+  }, [queryParams, page]);
 
-        setImages([...images, ...imagesArray])
-        setImagesOnPage(imagesOnPage + imagesArray.length)
-        setTotalImages(totalHits)
-        setIsLoading(false)
-        setQueryParams({...queryParams, prevPage: queryParams.prevPage + 1});
+  const getSearchRequest = queryParams => {
+    setQueryParams(queryParams);
+    setPage(1);
+    setImages([]);
+  };
 
-      })
-      .catch(error => toast.error(error))
-      .finally(() => setIsLoading(false));
+  const onNextFetch = () => {
+    setPage(page => page + 1);
   };
 
   const toggleModal = () => {
-    setShowModal(prevShowModal => !prevShowModal);
+    setShowModal(!showModal);
   };
 
   const openModal = e => {
@@ -52,18 +72,19 @@ function App() {
 
     setShowModal(!showModal);
     setCurrentImageUrl(currentImageUrl);
-    setCurrentImageDescription(currentImageDescription)
+    setCurrentImageDescription(currentImageDescription);
   };
+
   return (
     <>
-      <Searchbar onSubmit={getSearchRequest} queryParams={queryParams} setQueryParams={setQueryParams}/>
+      <Searchbar onSubmit={getSearchRequest} />
 
       {images && <ImageGallery images={images} openModal={openModal} />}
 
       {isLoading && <Loader />}
 
       {imagesOnPage >= 12 && imagesOnPage < totalImages && (
-        <Button onNextFetch={getSearchRequest} />
+        <Button onNextFetch={onNextFetch} />
       )}
 
       {showModal && (
