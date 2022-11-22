@@ -28,7 +28,7 @@ function App() {
     setIsLoading(true);
 
     const renderImages = () => {
-      imageFetch(queryParams, setPage)
+      imageFetch(queryParams, page)
         .then(({ hits, totalHits }) => {
           const imagesArray = hits.map(hit => ({
             id: hit.id,
