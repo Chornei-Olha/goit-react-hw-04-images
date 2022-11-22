@@ -37,7 +37,7 @@ function App() {
             largeImage: hit.largeImageURL,
           }));
           setImages(images => [...images, ...imagesArray]);
-          setImagesOnPage(imagesOnPage => imagesOnPage + imagesArray.length);
+          setImagesOnPage(imagesArray.length);
           setTotalImages(totalHits);
           setIsLoading(false);
         })
@@ -82,7 +82,7 @@ function App() {
 
       {isLoading && <Loader />}
 
-      {imagesOnPage >= 12 && imagesOnPage < totalImages && (
+      {imagesOnPage >= 20 && imagesOnPage < totalImages && (
         <Button onNextFetch={onNextFetch} />
       )}
 
