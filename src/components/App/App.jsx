@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 // import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import fetchImages from '../../services/images-api';
+import fetch from '../../services/images-api';
 import Searchbar from '../Searchbar';
 import ImageGallery from '../ImageGallery';
 import Button from '../Button';
@@ -20,7 +20,6 @@ function App() {
   const [page, setPage] = useState(null);
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [currentImageDescription, setCurrentImageDescription] = useState(false);
-  // const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!queryParams) {
@@ -29,7 +28,7 @@ function App() {
     setIsLoading(true);
 
     const renderImages = () => {
-      fetchImages(queryParams, setPage)
+      fetch(queryParams, setPage)
         .then(({ hits, totalHits }) => {
           const imagesArray = hits.map(hit => ({
             id: hit.id,
