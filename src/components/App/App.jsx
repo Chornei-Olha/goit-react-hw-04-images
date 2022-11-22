@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import fetchImages from '../../services/images-api';
 import Searchbar from '../Searchbar';
@@ -42,12 +42,12 @@ function App() {
           setTotalImages(totalHits);
           setIsLoading(false);
         })
-        .catch(error => {
-          setError(error);
-        });
-      toast
-        .error('Please enter a valid request')
-        .finally(() => setIsLoading(false));
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     };
     renderImages();
   }, [queryParams, page]);
