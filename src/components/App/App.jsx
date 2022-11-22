@@ -82,7 +82,7 @@ function App() {
 
       {isLoading && <Loader />}
 
-      {imagesOnPage >= 20 && imagesOnPage < totalImages && (
+      {imagesOnPage >= 12 && imagesOnPage < totalImages && (
         <Button onNextFetch={onNextFetch} />
       )}
 
