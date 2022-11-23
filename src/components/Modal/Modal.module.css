@@ -2,10 +2,8 @@
   position: fixed;
   top: 0;
   left: 0;
-
   width: 100vw;
   height: 100vh;
-
   background-color: var(--backdrop-bg-color);
 }
 
@@ -14,20 +12,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   width: 280px;
   height: auto;
-
   background-color: var(--main-bg-color);
   box-shadow: var(--box-shadow);
 }
-
 @media screen and (min-width: 768px) {
   .modal {
     width: 600px;
   }
 }
-
 @media screen and (min-width: 1440px) {
   .modal {
     width: 900px;
@@ -35,19 +29,17 @@
 }
 
 .wrapper {
+  margin-left: 530px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 5px;
 }
-
 @media screen and (min-width: 768px) {
   .wrapper {
     padding: 10px;
   }
 }
-
 @media screen and (min-width: 1440px) {
   .wrapper {
     padding: 30px;
@@ -83,7 +75,6 @@
 .button:focus {
   color: var(--accent-bg-color);
 }
-
 @media screen and (min-width: 768px) {
   .button {
     width: 40px;
@@ -95,7 +86,6 @@
   width: 10px;
   height: 10px;
 }
-
 @media screen and (min-width: 768px) {
   .icon {
     width: 12px;
